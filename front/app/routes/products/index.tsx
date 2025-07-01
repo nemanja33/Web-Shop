@@ -1,4 +1,8 @@
+import ProductCard from "~/app/components/product-card";
 import type { Route } from "../../+types/root";
+import products from "~/src/dummy-data.json";
+import type { Card } from '~/app/components/product-card/types.ts';
+import './style.css'
 
 
 // export async function loader({ params }: Route.LoaderArgs) {
@@ -17,5 +21,16 @@ import type { Route } from "../../+types/root";
 // }
 
 export default function Products() {
-    return <div>Products</div>
+    return (
+        <div className="product-grid">
+            {
+                products.map((product: Card) => (
+                    <ProductCard
+                        key={product.id}
+                        {...product}
+                    />
+                ))
+            }
+        </div>
+    )
 }
