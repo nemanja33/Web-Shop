@@ -3,7 +3,7 @@ import type { Route } from "../../+types/root";
 import type { Card } from '~/app/components/product-card/types.ts';
 import './style.css'
 import { useEffect, useState } from "react";
-const dataUrl = 'http://localhost:3000/data'
+const dataUrl = 'http://localhost:3000/api/products'
 
 // export async function loader({ params }: Route.LoaderArgs) {
 //     let product = await getProduct(params.pid);

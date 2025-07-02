@@ -1,63 +1,62 @@
 import products from "../products/products.json" with { type: "json" }
 
-export function getAllProducts() {
+export function getAll() {
   return new Promise((resolve, reject) => {
     if (!products || !products.length) {
-      reject(new Error('No products found'));
+      reject(new Error('No items found'));
       return;
     }
     resolve(products);
   });
 }
 
-export function getSingleProduct(id) {
+export function getById(id) {
   return new Promise((resolve, reject) => {
-    const product = products.filter(p => p.id === Number(id));
+    const item = products.filter(p => p.id === Number(id));
     
-    if (!product) {
-      reject(new Error('Product not found'));
+    if (!item) {
+      reject(new Error('Item not found'));
       return;
     }
 
-    resolve(product);
+    resolve(item);
   })
 }
 
-export function addProduct(newProduct) {
+export function addNew(newItem) {
   return new Promise((resolve, reject) => {
-    if (!newProduct) {
-      reject(new Error('Invalid product data'));
+    if (!newItem) {
+      reject(new Error('Invalid data'));
       return;
     }
-    products.push(newProduct);
-    resolve(newProduct);
+    resolve(newItem);
   })
 }
 
-export function updateProduct(product) {
+export function updateItem(item) {
+  // ovo nije dobro
   return new Promise((resolve, reject) => {
-    const index = products.findIndex(p => p.id === product.id)
-    
-    if (index === -1) {
-      reject(new Error('Product not found'));
-      return;
-    }
-    products[index] = product;
-    resolve(product);
-  })
-}
-
-
-export function deleteProduct(product) {
-  return new Promise((resolve, reject) => {
-    const index = products.findIndex(p => p.id === product.id)
+    const index = products.findIndex(p => p.id === item.id)
     
     if (index === -1) {
       reject(new Error('Product not found'));
       return;
     }
+    resolve(item);
+  })
+}
 
-    products.filter(p => p.id !== index)
-    resolve(product);
+
+export function deleteItem(item) {
+  // ovo nije dobro
+  return new Promise((resolve, reject) => {
+    const index = products.findIndex(p => p.id === item.id)
+    
+    if (index === -1) {
+      reject(new Error('Product not found'));
+      return;
+    }
+
+    resolve(item);
   })
 }
