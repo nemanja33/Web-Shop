@@ -40,6 +40,8 @@ const Header = (): React.ReactElement => {
             type="text"
             placeholder="Search..."
             className="header-search-input"
+            id='search'
+            name='search'
           />
           <button className="header-search-button">Search</button>
         </form>

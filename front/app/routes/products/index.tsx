@@ -1,9 +1,9 @@
 import ProductCard from "~/app/components/product-card";
 import type { Route } from "../../+types/root";
-import products from "~/src/dummy-data.json";
 import type { Card } from '~/app/components/product-card/types.ts';
 import './style.css'
-
+import { useEffect, useState } from "react";
+const dataUrl = 'http://localhost:3000/data'
 
 // export async function loader({ params }: Route.LoaderArgs) {
 //     let product = await getProduct(params.pid);
@@ -21,6 +21,22 @@ import './style.css'
 // }
 
 export default function Products() {
+    const [products, setProducts] = useState<Card[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(dataUrl);
+                const data = await response.json();
+                setProducts(data)
+            } catch (error) {
+                console.log('error', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <div className="product-grid">
             {
