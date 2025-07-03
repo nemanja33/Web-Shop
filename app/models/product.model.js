@@ -12,7 +12,7 @@ export function getAll() {
 
 export function getById(id) {
   return new Promise((resolve, reject) => {
-    const item = products.filter(p => p.id === Number(id));
+    const item = products.splice(id, 1);
     
     if (!item) {
       reject(new Error('Item not found'));
@@ -33,30 +33,14 @@ export function addNew(newItem) {
   })
 }
 
-export function updateItem(item) {
-  // ovo nije dobro
+export function findById(id) {
   return new Promise((resolve, reject) => {
-    const index = products.findIndex(p => p.id === item.id)
+    const item = products.find(p => p.id === Number(id))
     
-    if (index === -1) {
+    if (!item) {
       reject(new Error('Product not found'));
       return;
     }
-    resolve(item);
-  })
-}
-
-
-export function deleteItem(item) {
-  // ovo nije dobro
-  return new Promise((resolve, reject) => {
-    const index = products.findIndex(p => p.id === item.id)
-    
-    if (index === -1) {
-      reject(new Error('Product not found'));
-      return;
-    }
-
     resolve(item);
   })
 }

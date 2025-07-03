@@ -1,7 +1,6 @@
 type Card = {
   id: string;
   date: string;
-  time: string;
   name: string;
   category: string;
   price: number;

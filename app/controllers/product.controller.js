@@ -1,5 +1,5 @@
-import { getAll, getById, addNew } from '../models/product.model.js';
-import path from "path";
+import { getAll, getById, addNew, findById } from '../models/product.model.js';
+import path, { parse } from "path";
 import { fileURLToPath } from "url";
 import fs from 'fs';
 
@@ -69,6 +69,81 @@ export async function addNewProduct(_, res, product) {
     res.writeHead(200, { "Content-Type": "application/json" })
     res.end(JSON.stringify(product));
 
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function updateProductInFile(product) {
+  try {
+    fs.readFile(path.resolve(__dirname, PRODUCTS_FILE), 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return;
+      }
+      const parsedData = JSON.parse(data);
+      const productIndex = parsedData.findIndex((p) => p.id === Number(product.id));
+      if (productIndex === -1) {
+        console.error('Product not found in file');
+        return;
+      }
+      
+      parsedData[productIndex] = product;
+      fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(parsedData), 'utf8', (err) => {
+        if (err) {
+          console.error('Error updating product:', err);
+        }
+      });
+    })
+  } catch (error) {
+    console.error('Error updating product:', error);
+    return;
+  }
+}
+
+export async function updateProduct(_, res, product) {  
+  try {
+    updateProductInFile(product)
+    res.writeHead(200, { "Content-Type": "application/json" })
+    res.end({ message: 'Product updated successfully' });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function deleteProductInFile(id) {
+  try {
+    fs.readFile(path.resolve(__dirname, PRODUCTS_FILE), 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return;
+      }
+      const parsedData = JSON.parse(data);
+      const productIndex = parsedData.findIndex((p) => p.id === Number(id));
+      if (productIndex === -1) {
+        console.error('Product not found in file');
+        return;
+      }
+      
+      parsedData.splice(productIndex, 1);
+      fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(parsedData), 'utf8', (err) => {
+        if (err) {
+          console.error('Error updating product:', err);
+        }
+      });
+    })
+  } catch (error) {
+    console.error('Error updating product:', error);
+    return;
+  }
+}
+
+
+export async function deleteProduct(_, res, id) {
+  try {
+    deleteProductInFile(id)
+    res.writeHead(200, { "Content-Type": "application/json" })
+    res.end({ message: 'Product deleted successfully' });
   } catch (error) {
     console.log(error);
   }
