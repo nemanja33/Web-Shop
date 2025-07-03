@@ -1,5 +1,4 @@
 import React from 'react';
-import './style.css';
 import logo from '~/src/media/logo.png';
 import basket from '~/src/media/basket.png';
 import { Link } from 'react-router';

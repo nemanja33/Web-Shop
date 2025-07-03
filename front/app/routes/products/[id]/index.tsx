@@ -1,12 +1,19 @@
 import React from 'react'
 import { useParams } from 'react-router'
-import products from '~/src/dummy-data.json'
 import type { Card } from '~/app/components/product-card/types.ts';
-import './style.css'
+import useGetSingleProduct from '~/app/hooks/api/useGetSingleProduct';
 
 const Product = (): React.ReactElement => {
-  const { name } = useParams()
-  const product: Card = products.find((p: Card) => p.name.toLowerCase().replaceAll(" ", "-") === name)
+  const { id } = useParams()
+  
+  const product: Card = useGetSingleProduct(Number(id))
+
+  if (!product) {
+    return <div className="product-item-loading">Loading...</div>
+  }
+
+  console.log('Product Data:', product);
+  
 
   return (
     <div className="product-item-container">

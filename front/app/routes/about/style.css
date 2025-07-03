@@ -1,9 +1,0 @@
-@import "tailwindcss";
-
-.about-title {
-  @apply mb-6 text-center;
-}
-
-.about-text {
-  @apply text-lg text-gray-700 dark:text-gray-300 mb-4;
-}

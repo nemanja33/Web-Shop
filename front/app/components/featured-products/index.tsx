@@ -1,6 +1,5 @@
 import React from 'react'
 import ProductCard from '../product-card';
-import './style.css'
 import products from "~/src/dummy-data.json";
 import type { Card } from '~/app/components/product-card/types.ts';
 

@@ -1,9 +1,0 @@
-@import "tailwindcss";
-
-.footer-container {
-  @apply bg-gray-800 text-white py-4 text-center;
-}
-
-.footer-copyright {
-  @apply text-sm;
-}

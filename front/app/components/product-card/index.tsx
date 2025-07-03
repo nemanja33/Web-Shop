@@ -1,9 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router'
-import './style.css'
 import type { Card } from './types';
 
 const ProductCard = ({
+    id,
   name,
   category,
   price,
@@ -14,7 +14,7 @@ const ProductCard = ({
   
   return (
     <Link
-        to={`/products/${name.toLowerCase().replaceAll(" ", "-")}`}
+        to={`/products/${id}`}
         className="product-card">
         <div className="product-card-image-container">
             <img 

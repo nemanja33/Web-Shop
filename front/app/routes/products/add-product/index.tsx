@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import './style.css';
 import type { Form } from './types';
-
 
 const URL = "http://localhost:3000/data"
 
