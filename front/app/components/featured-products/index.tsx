@@ -14,7 +14,7 @@ const latestThree = sortedByDate.slice(0, 3);
 const FeaturedProducts = (): React.ReactElement => {
   return (
     <div className="product-list-container">
-      <div className="product-list-header">
+      {/* <div className="product-list-header">
         <h1 className="product-list-title">Featured Products</h1>
         <p className="product-list-subtitle">
           Discover our carefully curated selection of premium products
@@ -30,7 +30,7 @@ const FeaturedProducts = (): React.ReactElement => {
             />
           ))
         }
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -9,8 +9,8 @@ export default [
   ...prefix("products", [
     index("./routes/products/index.tsx"),
     route("add-product", "./routes/products/add-product/index.tsx"),
-    route(":name", "./routes/products/[name]/index.tsx"),
-    route(":name/edit", "./routes/products/[name]/edit-product/index.tsx"),
+    route(":id", "./routes/products/[id]/index.tsx"),
+    route(":id/edit", "./routes/products/[id]/edit-product/index.tsx"),
   ]),
 
 ] satisfies RouteConfig

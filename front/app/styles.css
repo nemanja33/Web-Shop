@@ -16,10 +16,6 @@
   @apply text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto md:mx-0;
 }
 
-.product-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
-}
-
 .footer-container {
   @apply bg-gray-800 text-white py-4 text-center;
 }
@@ -239,8 +235,6 @@
 .product-grid {
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
 }
-
-
 
 .product-item-container {
   @apply container mx-auto px-4 py-8 max-w-6xl;

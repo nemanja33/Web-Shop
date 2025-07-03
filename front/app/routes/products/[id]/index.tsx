@@ -1,19 +1,15 @@
 import React from 'react'
 import { useParams } from 'react-router'
-import type { Card } from '~/app/components/product-card/types.ts';
 import useGetSingleProduct from '~/app/hooks/api/useGetSingleProduct';
 
 const Product = (): React.ReactElement => {
   const { id } = useParams()
   
-  const product: Card = useGetSingleProduct(Number(id))
+  const { product, loading } = useGetSingleProduct(Number(id))
 
-  if (!product) {
+  if (loading) {
     return <div className="product-item-loading">Loading...</div>
   }
-
-  console.log('Product Data:', product);
-  
 
   return (
     <div className="product-item-container">
