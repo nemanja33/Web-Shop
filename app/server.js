@@ -37,6 +37,56 @@ const newProduct = {
   ]
 }
 
+const productToUpdate = {
+  id: 1,
+  date: new Date(),
+  name: "test",
+  description: "test desc",
+  category: "test category",
+  price: 100,
+  image: "http://localhost:5173/src/media/landscape-placeholder.svg",
+  rating: {
+    rate: 4.5,
+    count: 10
+  },
+  features: ["test feature 1", "test feature 2"],
+  variants: [
+    {
+      color: "red",
+      stock: 10
+    },
+    {
+      color: "blue",
+      stock: 5
+    }
+  ]
+}
+
+const productToDelete = {
+  id: 1,
+  date: new Date(),
+  name: "test",
+  description: "test desc",
+  category: "test category",
+  price: 100,
+  image: "http://localhost:5173/src/media/landscape-placeholder.svg",
+  rating: {
+    rate: 4.5,
+    count: 10
+  },
+  features: ["test feature 1", "test feature 2"],
+  variants: [
+    {
+      color: "red",
+      stock: 10
+    },
+    {
+      color: "blue",
+      stock: 5
+    }
+  ]
+}
+
 const server = http.createServer((req, res) => {
   const { method, url } = req;
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -68,15 +118,14 @@ const server = http.createServer((req, res) => {
     method === 'PUT' &&
     url.match(URL_REGEX)
   ) {
-    updateProduct(req, res, newProduct)
+    updateProduct(req, res, productToUpdate)
   }
 
   if (
     method === 'DELETE' &&
     url.match(URL_REGEX)
   ) {
-    const id = url.split('/').pop();
-    deleteProduct(req, res, id)
+    deleteProduct(req, res, productToDelete)
   }
 })
 

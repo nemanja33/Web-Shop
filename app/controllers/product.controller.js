@@ -1,11 +1,4 @@
-import { getAll, getById, addNew } from '../models/product.model.js';
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from 'fs';
-
-// Currently works with FS. Needs to work with a DB at some point
-const PRODUCTS_FILE = '../products/products.json';
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { getAll, getById, addNew, updateItem, deleteItem } from '../models/product.model.js';
 
 export async function getProducts(_, res) {
   try {
@@ -14,7 +7,9 @@ export async function getProducts(_, res) {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(products));
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching products:', error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: 'Failed to fetch products' }));
   }
 }
 
@@ -28,30 +23,9 @@ export async function getProductById(_, res, id) {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(product));
   } catch (error) {
-    console.log(error);
-  }
-}
-
-function saveProductToFile(product) {
-  let tempProducts = [];
-  try {
-    fs.readFile(path.resolve(__dirname, PRODUCTS_FILE), 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading file:', err);
-        return;
-      }
-      const parsedData = JSON.parse(data)
-      tempProducts = [...parsedData, product];
-  
-      fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(tempProducts), 'utf8', (err) => {
-        if (err) {
-          console.error('Error saving product:', err);
-        }
-      });
-    });
-  } catch (error) {
-    console.error('Error adding product to file:', error);
-    return;
+    console.error('Error fetching products:', error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: `Failed to fetch product with id ${id}` }));
   }
 }
 
@@ -63,87 +37,36 @@ export async function addNewProduct(_, res, product) {
       throw new Error('Invalid product data');
     }
 
-    saveProductToFile(newProduct)
-
     res.writeHead(200, { "Content-Type": "application/json" })
     res.end(JSON.stringify(product));
 
   } catch (error) {
-    console.log(error);
-  }
-}
-
-function updateProductInFile(product) {
-  try {
-    fs.readFile(path.resolve(__dirname, PRODUCTS_FILE), 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading file:', err);
-        return;
-      }
-      const parsedData = JSON.parse(data);
-      const productIndex = parsedData.findIndex((p) => p.id === Number(product.id));
-      if (productIndex === -1) {
-        console.error('Product not found in file');
-        return;
-      }
-      
-      parsedData[productIndex] = product;
-      fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(parsedData), 'utf8', (err) => {
-        if (err) {
-          console.error('Error updating product:', err);
-        }
-      });
-    })
-  } catch (error) {
-    console.error('Error updating product:', error);
-    return;
+    console.error('Error fetching products:', error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: 'Failed to add new product' }));
   }
 }
 
 export async function updateProduct(_, res, product) {  
   try {
-    updateProductInFile(product)
+    const updatedProduct = updateItem(product)
     res.writeHead(200, { "Content-Type": "application/json" })
-    res.end({ message: 'Product updated successfully' });
+    res.end(JSON.stringify(updatedProduct));
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching products:', error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: 'Failed to update product' }));
   }
 }
 
-function deleteProductInFile(id) {
+export async function deleteProduct(_, res, product) {
   try {
-    fs.readFile(path.resolve(__dirname, PRODUCTS_FILE), 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading file:', err);
-        return;
-      }
-      const parsedData = JSON.parse(data);
-      const productIndex = parsedData.findIndex((p) => p.id === Number(id));
-      if (productIndex === -1) {
-        console.error('Product not found in file');
-        return;
-      }
-      
-      parsedData.splice(productIndex, 1);
-      fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(parsedData), 'utf8', (err) => {
-        if (err) {
-          console.error('Error updating product:', err);
-        }
-      });
-    })
-  } catch (error) {
-    console.error('Error updating product:', error);
-    return;
-  }
-}
-
-
-export async function deleteProduct(_, res, id) {
-  try {
-    deleteProductInFile(id)
+    const deletedProduct = deleteItem(product);
     res.writeHead(200, { "Content-Type": "application/json" })
-    res.end({ message: 'Product deleted successfully' });
+    res.end(JSON.stringify(deletedProduct));
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching products:', error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: 'Failed to delete product' }));
   }
 }
