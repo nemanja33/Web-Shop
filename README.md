@@ -1,7 +1,11 @@
 # Web-Shop
 
 # ENV
-cd ./app
+- cd ./app
+create `.env` file
+paste the needed data
+
+- cd ./front
 create `.env` file
 paste the needed data
 
