@@ -1,12 +1,11 @@
-import { getAll, getById, addNew, findById } from '../models/product.model.js';
-import path, { parse } from "path";
+import { getAll, getById, addNew } from '../models/product.model.js';
+import path from "path";
 import { fileURLToPath } from "url";
 import fs from 'fs';
 
-// CONSTANTS
+// Currently works with FS. Needs to work with a DB at some point
 const PRODUCTS_FILE = '../products/products.json';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 
 export async function getProducts(_, res) {
   try {

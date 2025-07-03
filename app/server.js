@@ -1,11 +1,16 @@
 import http from 'http';
 import { v4 as uuid } from 'uuid';
-// add env variables for be and fe
+import dotenv from 'dotenv';
 import { addNewProduct, deleteProduct, getProductById, getProducts, updateProduct } from './controllers/product.controller.js';
 
+dotenv.config();
 
-const PORT = process.env.PORT || 3000;
-const PRODUCTS_URL = '/api/products';
+const PORT = process.env.PORT;
+const API_URL = process.env.API_URL;
+// fine by now to get by ID but I want to get by name
+const URL_REGEX = new RegExp(`^${API_URL.replace(/\//g, '\\/')}/([0-9]+)$`);
+
+// change all to TypeScript
 // sa FE treba da dobijem
 const newProduct = {
   id: uuid(),
@@ -31,8 +36,6 @@ const newProduct = {
     }
   ]
 }
-// code is ass. investigate and fix it
-// change all to TypeScript
 
 const server = http.createServer((req, res) => {
   const { method, url } = req;
@@ -42,14 +45,13 @@ const server = http.createServer((req, res) => {
 
   if (
     method === 'GET' &&
-    url === PRODUCTS_URL
+    url === API_URL
   ) {
     getProducts(req, res)
   }
-
   if (
     method === 'GET' &&
-    url.match(/^\/api\/products\/([0-9]+)/)
+    url.match(URL_REGEX)
   ) {
     const id = url.split('/').pop();
     getProductById(req, res, id)
@@ -57,21 +59,21 @@ const server = http.createServer((req, res) => {
   
   if (
     method === 'POST' &&
-    url === PRODUCTS_URL
+    url === API_URL
   ) {
     addNewProduct(req, res, newProduct);
   }
 
   if (
     method === 'PUT' &&
-    url.match(/^\/api\/products\/([0-9]+)/)
+    url.match(URL_REGEX)
   ) {
     updateProduct(req, res, newProduct)
   }
 
   if (
     method === 'DELETE' &&
-    url.match(/^\/api\/products\/([0-9]+)/)
+    url.match(URL_REGEX)
   ) {
     const id = url.split('/').pop();
     deleteProduct(req, res, id)
@@ -79,5 +81,5 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log('Server is running on http://localhost:3000');
+  console.log('Server is running');
 });
