@@ -1,6 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from 'fs';
+import { v4 as uuid } from 'uuid';
 
 // Currently works with FS. Needs to work with a DB at some point
 const PRODUCTS_FILE = '../products/products.json';
@@ -29,11 +30,11 @@ export function getAll() {
   });
 }
 
-// GET SINLE
+// GET SINGLE
 export function getById(id) {
   return new Promise((resolve, reject) => {
     const products = getProducts();
-    const item = products.splice(id - 1, 1);
+    const item = products.find(p => p.id === id);
     
     if (!item) {
       reject(new Error('Item not found'));
@@ -48,6 +49,8 @@ export function getById(id) {
 function saveProductToFile(product) {
   try {
     const products = getProducts();
+    product.id = uuid();
+    product.image = "http://localhost:5173/src/media/landscape-placeholder.svg";
     const tempProducts = [...products, product];
     fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(tempProducts), 'utf8', (err) => {
       if (err) {
@@ -77,14 +80,13 @@ function updateProductInFile(product) {
   try {
     const products = getProducts();
     
-    const productIndex = products.findIndex((p) => p.id === Number(product.id));
+    const productIndex = products.findIndex((p) => p.id === product.id);
     if (productIndex === -1) {
       console.error('Product not found in file');
       return;
     }
     
     products[productIndex] = product;
-    console.log(products);
     
     fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(products, null, 2), 'utf8', (err) => {
       if (err) {
@@ -115,7 +117,7 @@ export function updateItem(product) {
 function deleteProductInFile(product) {
   try {
     const products = getProducts();
-    const productIndex = products.findIndex((p) => p.id === Number(product.id));
+    const productIndex = products.findIndex((p) => p.id === product.id);
     if (productIndex === -1) {
       console.error('Product not found in file');
       return;

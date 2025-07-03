@@ -28,7 +28,7 @@ const ProductCard = ({
             <h3 className="product-card-title">{name}</h3>
             <p className="product-card-description">{description}</p>
             <div className="product-card-price-container">
-                <span className="product-card-price">${price.toFixed(2)}</span>
+                <span className="product-card-price">${price}</span>
                 { rating && (
                     <div className="product-card-rating">
                         <span className="product-card-stars">{"★".repeat(Math.floor(rating.rate))}{"☆".repeat(5 - Math.floor(rating.rate))}</span>

@@ -1,49 +1,25 @@
 import React, { useState } from 'react';
-import type { Form } from './types';
-
-const URL = "http://localhost:3000/data"
+import useAddNewProduct from '~/app/hooks/api/useAddNewProduct';
+import type { Card } from '~/components/product-card/types';
 
 const AddProduct = (): React.ReactElement => {
-  const [ formData, setFormData ] = useState<Form>({
-    name: '',
-    category: '',
-    price: 0,
-    description: '',
-    rating: 0,
-    variants: '',
-    image: ''
-  });
+  const [ formData, setFormData ] = useState<Card>({} as Card);
   const [ features, setFeatures ] = useState<string[]>([]);
+  const { loading, error, addProduct } = useAddNewProduct();
+
   const handleSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    // add validation
     const data = {
       ...formData,
       features
     }
 
-    const date = new Date();
-    console.log(date.toLocaleTimeString('en-GB'));
-    
-
-
     try {
-      const response = await fetch(URL, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data),
-      });
-
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
-      alert('product added')
+      addProduct(data)
+      window.location.href = '/products';
     } catch (error) {
-      console.log('Error submitting form:', error);
+      
     }
   }
 

@@ -1,14 +1,27 @@
-import React from 'react'
-import { useParams } from 'react-router'
+import React, { use, useEffect } from 'react';
+import { useParams } from 'react-router';
 import useGetSingleProduct from '~/app/hooks/api/useGetSingleProduct';
 
 const Product = (): React.ReactElement => {
-  const { id } = useParams()
-  
-  const { product, loading } = useGetSingleProduct(Number(id))
+  const { id } = useParams();
+  const { product, loading, error, getProduct } = useGetSingleProduct();
+
+  useEffect(() => {
+    if (!product.id) {
+      getProduct(id);
+    }
+  }, [id]);
 
   if (loading) {
-    return <div className="product-item-loading">Loading...</div>
+    return <div className="product-item-loading">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="product-item-error">Error: {error}</div>;
+  }
+
+  if (!product || !product.name) {
+    return <div className="product-item-error">Product not found</div>;
   }
 
   return (
@@ -49,7 +62,7 @@ const Product = (): React.ReactElement => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Product
+export default Product;

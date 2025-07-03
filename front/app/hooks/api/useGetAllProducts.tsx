@@ -1,33 +1,44 @@
-import React, { useEffect } from 'react'
+import { useState } from 'react'
 import type { Card } from '~/components/product-card/types';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const useGetAllProducts = () => {
-  const [products, setProducts] = React.useState<Card[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(true);
+interface IProducts {
+  products: Card[];
+  loading: boolean;
+  error: string | null;
+  getAll: () => Promise<Card[]>;
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        setProducts(data)
-      } catch (error) {
-        console.log('error', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+const useGetAllProducts = (): IProducts => {
+  const [products, setProducts] = useState<Card[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-    fetchData();
-  }, []);
-
+  const getAll = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      } 
+      const data = await response.json();
+      setProducts(data)
+      setError(null);
+      return data
+    } catch (error) {
+      console.error('Failed to fetch products', error);
+      setError('Failed to fetch products');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
+    error,
     products,
-    loading
+    loading,
+    getAll
   }
 }
 
