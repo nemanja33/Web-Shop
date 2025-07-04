@@ -1,31 +1,93 @@
 import React, { useState } from 'react';
 import useAddNewProduct from '~/app/hooks/api/useAddNewProduct';
 import type { Card } from '~/components/product-card/types';
+import ProductForm from '~/app/components/product-form';
+import { ProductFormSchema } from '~/app/components/product-form/schema';
+import { ZodError } from 'zod';
 
 const AddProduct = (): React.ReactElement => {
-  const [ formData, setFormData ] = useState<Card>({} as Card);
+  const [ formState, setFormState ] = useState<Card>({
+    id: '',
+    name: '',
+    category: '',
+    price: 0,
+    rating: {
+      rate: 0,
+      count: 0
+    },
+    description: '',
+    features: [],
+    imageUrl: '',
+    imageAlt: ''
+  });
   const [ features, setFeatures ] = useState<string[]>([]);
-  const { loading, error, addProduct } = useAddNewProduct();
+  const [ errors, setErrors ] = useState<{[key: string]: string}>({})
+  const { loading, addProduct } = useAddNewProduct();
 
   const handleSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-
-    const data = {
-      ...formData,
-      features
-    }
+    const finalData = {
+      ...formState,
+      features: features
+    };
 
     try {
-      addProduct(data)
+      const validatedData = ProductFormSchema.parse(finalData);
+      const formData = new FormData();
+    
+      // Create a FormData object to handle file uploads
+      Object.entries(validatedData).forEach(([key, value]) => {
+        if (key === 'imageUrl' && value instanceof File) {
+          formData.append(key, value);
+        } else if (Array.isArray(value)) {
+          value.forEach((item, i) => formData.append(`${key}[${i}]`, item));
+        } else {
+          formData.append(key, String(value));
+        }
+      });
+    
+      await addProduct(formData);
       window.location.href = '/products';
+      setErrors({});
     } catch (error) {
-      
+      if (error instanceof ZodError) {
+        const fieldErrors: typeof errors = {};
+        error.errors.forEach(({ path, message }) => {
+          const key = path[0] as string;
+          fieldErrors[key] = message;
+        });
+        setErrors(fieldErrors);
+      }
     }
   }
 
   const handleInputChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = ev.target;
-    setFormData((prevData) => {
+
+    if (name === 'imageUrl' && ev.target instanceof HTMLInputElement) {
+      const file = ev.target.files?.[0];
+      if (!file) return
+      setFormState((prevData) => {
+        return {
+          ...prevData,
+          [name]: file
+        };
+      });
+      return;
+    }
+
+    if (name === 'price') {
+      setFormState((prevData) => {
+        return {
+          ...prevData,
+          [name]: parseFloat(value)
+        }
+      })
+
+      return
+    }
+
+    setFormState((prevData) => {
       return {
         ...prevData,
         [name]: value
@@ -34,120 +96,24 @@ const AddProduct = (): React.ReactElement => {
   }
 
   const handleFeatures = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = ev.target;
-    const featureArray = value.split(',').map(feature => feature.trim());
-    setFeatures(featureArray);
+    const { name, value } = ev.target;
+    const getIndex = Number(name.split('-')[1]);
+    setFeatures((prevData) => {
+      const updatedFeat = [...prevData];
+      updatedFeat[getIndex] = value;
+      return updatedFeat;
+    });
   }
 
   return (
-    // add hint text to each input field
-    // add validation to each input field
     <div className="add-product-container">
       <h1 className="add-product-title">Add New Product</h1>
-      <form
-        onSubmit={handleSubmit}
-        method='post'
-        className="add-product-form">
-        <div>
-
-          {/* Name */}
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">Name:</label>
-            <input
-                type="text"
-                id="name"
-                name="name"
-                className="form-input"
-                autoComplete="on"
-                onChange={handleInputChange}/>
-          </div>
-
-          {/* Category */}
-          <div className="form-group">
-            <label htmlFor="category" className="form-label">Category:</label>
-            <input
-              type="text"
-              id="category"
-              name="category"
-              className="form-input"
-              onChange={handleInputChange}/>
-          </div>
-
-          {/* Price */}
-          <div className="form-group">
-            <label htmlFor="price" className="form-label">Price:</label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              className="form-input" 
-              onChange={handleInputChange}/>
-          </div>
-
-          {/* Description */}
-          <div className="form-group">
-            <label htmlFor="description" className="form-label">Description:</label>
-            <textarea
-              id="description"
-              name="description"
-              className="form-textarea"
-              onChange={handleInputChange}
-              ></textarea>
-          </div>
-        </div>
-        <div>
-          {/* Rating */}
-          <div className="form-group">
-            <label htmlFor="rating" className="form-label">Rating:</label>
-            <input
-              type="number"
-              id="rating"
-              name="rating"
-              className="form-input"
-              step="0.1"
-              min="0"
-              max="5" 
-              onChange={handleInputChange}/>
-          </div>
-
-          {/* Features */}
-          <div className="form-group">
-            <label htmlFor="features" className="form-label">Features (comma-separated):</label>
-            <input
-              type="text"
-              id="features"
-              name="features"
-              className="form-input" 
-              onChange={handleFeatures}/>
-          </div>
-
-          {/* really in JSON format? maybe add input fields with a button to add more */}
-          {/* Variants */}
-          <div className="form-group">
-            <label htmlFor="variants" className="form-label">Variants (JSON format):</label>
-            <textarea
-              id="variants"
-              name="variants"
-              className="form-textarea"
-              onChange={handleInputChange}
-              ></textarea>
-          </div>
-          <button className="form-submit-button">Add Product</button>
-        </div>
-
-        {/* Image */}
-        {/* upload image and save it how?? */}
-        {/* <div className="form-group">
-          <label htmlFor="image" className="form-label">Image URL:</label>
-          <input
-            type="url"
-            id="image"
-            name="image"
-            className="form-input" 
-            onChange={handleInputChange}/>
-        </div> */}
-
-      </form>
+      <ProductForm
+        submit={handleSubmit}
+        inputChange={handleInputChange}
+        featuresChange={handleFeatures}
+        errors={errors}
+        buttonDisabled={loading}/>
     </div>
   );
 };

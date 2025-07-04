@@ -1,5 +1,6 @@
 {
-  "name": "",
+  "name": "app-front",
+  "node": "22.11.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +15,8 @@
     "isbot": "^5.1.27",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.5.3"
+    "react-router": "^7.5.3",
+    "zod": "^3.25.73"
   },
   "devDependencies": {
     "@react-router/dev": "^7.5.3",

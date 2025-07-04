@@ -6,17 +6,14 @@ const useAddNewProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addProduct = async (newProduct: Card) => {
+  const addProduct = async (newProduct: any) => {
     try {
       setLoading(true);
       setError(null);
 
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newProduct),
+        body: newProduct,
       })
 
       if (!response.ok) {

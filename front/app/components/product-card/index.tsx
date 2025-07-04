@@ -7,19 +7,19 @@ const ProductCard = ({
   name,
   category,
   price,
-  image,
+  imageUrl,
+  imageAlt,
   description,
   rating
 }: Card): React.ReactElement => {
-  
   return (
     <Link
         to={`/products/${id}`}
         className="product-card">
         <div className="product-card-image-container">
             <img 
-                src={image} 
-                alt={name} 
+                src={imageUrl as string || 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg'} 
+                alt={imageAlt} 
                 className="product-card-image"
             />
         </div>
