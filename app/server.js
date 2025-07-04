@@ -1,6 +1,14 @@
 import http from 'http';
 import dotenv from 'dotenv';
-import { addNewProduct, deleteProduct, getProductById, getProducts, updateProduct } from './controllers/product.controller.js';
+import {
+    addNewProduct,
+    deleteProduct,
+    getProductById,
+    getProducts,
+    updateProduct, 
+    serveStaticImage }
+from './controllers/product.controller.js';
+import { parseMultipart } from './helper/helpers.js';
 
 dotenv.config();
 
@@ -24,17 +32,7 @@ const productToUpdate = {
     rate: 4.5,
     count: 10
   },
-  features: ["test feature 1", "test feature 2"],
-  variants: [
-    {
-      color: "red",
-      stock: 10
-    },
-    {
-      color: "blue",
-      stock: 5
-    }
-  ]
+  features: ["test feature 1", "test feature 2"]
 }
 
 const productToDelete = {
@@ -49,17 +47,7 @@ const productToDelete = {
     rate: 4.5,
     count: 10
   },
-  features: ["test feature 1", "test feature 2"],
-  variants: [
-    {
-      color: "red",
-      stock: 10
-    },
-    {
-      color: "blue",
-      stock: 5
-    }
-  ]
+  features: ["test feature 1", "test feature 2"]
 }
 
 const server = http.createServer((req, res) => {
@@ -79,14 +67,16 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  if (url.startsWith('/app/products/images')) {
+    serveStaticImage(req, res, url);
+  }
+
   if (
     method === 'GET' &&
     url === API_URL
   ) {
     getProducts(req, res)
   }
-
-
 
   if (
     method === 'GET' &&
@@ -101,22 +91,28 @@ const server = http.createServer((req, res) => {
     method === 'POST' &&
     url === API_URL
   ) {
-    let body = '';
-  
-    req.on('data', (chunk) => {
-      body += chunk;
-    });
-  
-    req.on('end', () => {
-      try {
-        const newProduct = JSON.parse(body);
-        addNewProduct(req, res, newProduct);
-      } catch (error) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Invalid JSON' }));
-        return;
-      }
-    });
+    try {
+      parseMultipart(req, (fields) => {
+        const product = {
+          name: fields.name,
+          category: fields.category,
+          price: parseFloat(fields.price) || 0,
+          rating: {
+            rate: parseFloat(fields.ratingRate) || 0,
+            count: parseInt(fields.ratingCount, 10) || 0
+          },
+          features: fields.features ? JSON.parse(fields.features) : [],
+          imageUrl: `http://localhost:3000/app/products/images/${fields.imageUrl}`,
+          imageAlt: fields.imageAlt
+        };
+
+        addNewProduct(req, res, product);
+      })
+    } catch (error) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Invalid JSON' }));
+      return;
+    }
   }
 
   if (

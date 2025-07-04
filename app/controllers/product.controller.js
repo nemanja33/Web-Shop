@@ -1,4 +1,4 @@
-import { getAll, getById, addNew, updateItem, deleteItem } from '../models/product.model.js';
+import { getAll, getById, addNew, updateItem, deleteItem, serveImages } from '../models/product.model.js';
 
 export async function getProducts(_, res) {
   try {
@@ -68,5 +68,21 @@ export async function deleteProduct(_, res, product) {
     console.error('Error fetching products:', error);
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: 'Failed to delete product' }));
+  }
+}
+
+export async function serveStaticImage(_, res, imageName) {
+  try {
+    const { mimeType, data } = serveImages(imageName);
+
+    res.writeHead(200, { 'Content-Type': mimeType });
+    res.end(data);
+  } catch (error) {
+    console.error('Error serving static image:', error.message);
+
+    if (!res.headersSent) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: 'Image not found' }));
+    }
   }
 }

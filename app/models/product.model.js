@@ -5,7 +5,12 @@ import { v4 as uuid } from 'uuid';
 
 // Currently works with FS. Needs to work with a DB at some point
 const PRODUCTS_FILE = '../products/products.json';
+const IMAGES_FILE = '../products/images/';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __uploads = path.resolve(__dirname, IMAGES_FILE);
+
+console.log(__uploads);
+
 
 const getProducts = () => {
   try {
@@ -50,7 +55,6 @@ function saveProductToFile(product) {
   try {
     const products = getProducts();
     product.id = uuid();
-    product.image = "http://localhost:5173/src/media/landscape-placeholder.svg";
     const tempProducts = [...products, product];
     fs.writeFile(path.resolve(__dirname, PRODUCTS_FILE), JSON.stringify(tempProducts), 'utf8', (err) => {
       if (err) {
@@ -147,4 +151,25 @@ export function deleteItem(product) {
     deleteProductInFile(product)
     resolve(product);
   })
+}
+
+export function serveImages(url) {
+  const imageName = url.split('/').pop();
+  const imagePath = path.join(__uploads, imageName);
+
+  if (!fs.existsSync(imagePath)) {
+    throw new Error(`Image not found: ${imageName}`);
+  }
+
+  const ext = path.extname(imagePath).toLowerCase();
+  const mimeType = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.webp': 'image/webp',
+  }[ext] || 'application/octet-stream';
+
+  const data = fs.readFileSync(imagePath);
+  
+  return { mimeType, data };
 }
